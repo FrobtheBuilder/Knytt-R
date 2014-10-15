@@ -1,6 +1,0 @@
-[submodule "lib/lovekit"]
-	path = lib/lovekit
-	url = https://github.com/leafo/lovekit.git
-[submodule "moon/lib/lovekit"]
-	path = moon/lib/lovekit
-	url = https://github.com/leafo/lovekit
