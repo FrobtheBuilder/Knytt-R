@@ -9,7 +9,7 @@ run: src
 
 lovekit::
 	cd moon/lib/lovekit; \
-	moonc -t ../../../lua/lib lovekit
+	moonc -t ../../../lua lovekit
 
 clean:
-	bash -c "rm lua/"*.lua"; rm -r lua/lib/lovekit"
+	bash -c "rm lua/"*.lua"; rm -r lua/lovekit"
