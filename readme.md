@@ -18,4 +18,4 @@ To-do
 Technology
 ----------
 
-I'm using [Love2D](http://love2d.org/) and [Moonscript](http://moonscript.org) (a seldom used combination) cus I'm a massive hipster.
+I'm going full Leafo-mode with [Love2D](http://love2d.org/), [Moonscript](http://moonscript.org) and [Lovekit](https://github.com/leafo/lovekit) cus I'm a massive hipster.
