@@ -1,11 +1,23 @@
-require("lovekit.all")
-local image
+local State, worldState
 do
-  local _obj_0 = lovekit.image
-  image = _obj_0.image
+  local _obj_0 = require("states")
+  State, worldState = _obj_0.State, _obj_0.worldState
 end
-love.load = function() end
-love.update = function(dt) end
+GAMESTATE = require("lib.hump.gamestate")
+TIMER = require("lib.hump.timer")
+Camera = require("lib.hump.camera")
+love.load = function()
+  return GAMESTATE.switch(worldState())
+end
+love.update = function(dt)
+  return GAMESTATE.update(dt)
+end
 love.draw = function()
-  return love.graphics.print("hello", 100, 100)
+  return GAMESTATE.draw()
+end
+love.keypressed = function(key, code)
+  return GAMESTATE.keypressed(key, code)
+end
+love.mousepressed = function(x, y, button)
+  return GAMESTATE.mousepressed(x, y, button)
 end
