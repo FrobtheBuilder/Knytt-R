@@ -1,3 +1,6 @@
 [submodule "src/lib/lovekit"]
 	path = src/lib/lovekit
 	url = https://github.com/leafo/lovekit.git
+[submodule "built/lib/hump"]
+	path = built/lib/hump
+	url = https://github.com/vrld/hump.git
