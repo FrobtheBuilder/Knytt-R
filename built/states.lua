@@ -3,10 +3,10 @@ do
   local _obj_0 = require("thing")
   Thing = _obj_0.Thing
 end
-local Entity
+local Juni
 do
   local _obj_0 = require("entities")
-  Entity = _obj_0.Entity
+  Juni = _obj_0.Juni
 end
 local State
 do
@@ -15,9 +15,6 @@ do
     init = function(self) end,
     enter = function(self, previous, ...) end,
     leave = function(self) end,
-    update = function(self, dt)
-      return _parent_0.update(self, dt)
-    end,
     draw = function(self)
       self.camera:attach()
       _parent_0.draw(self)
@@ -69,9 +66,12 @@ local worldState
 do
   local _parent_0 = State
   local _base_0 = {
-    cdraw = function(self) end,
+    sdraw = function(self)
+      return love.graphics.print(1 / self.dt)
+    end,
     update = function(self, dt)
-      return _parent_0.update(self)
+      self.dt = dt
+      return _parent_0.update(self, dt)
     end
   }
   _base_0.__index = _base_0
@@ -79,8 +79,8 @@ do
   local _class_0 = setmetatable({
     __init = function(self)
       _parent_0.__init(self)
-      self.camera:zoomTo(1)
-      return self:addChild(Entity())
+      self.dt = 0
+      return self:addChild(Juni(10, 10))
     end,
     __base = _base_0,
     __name = "worldState",

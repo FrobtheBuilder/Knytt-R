@@ -10,6 +10,7 @@ export Camera = require "lib.hump.camera"
 
 
 love.load = ->
+	love.graphics.setBackgroundColor(0, 0, 255)
 	GAMESTATE.switch(worldState!)
 
 love.update = (dt) ->

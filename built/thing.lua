@@ -2,11 +2,11 @@ local Signals = require("lib.hump.signal")
 local Thing
 do
   local _base_0 = {
-    added = function(self, to)
-      return self:setParent(to)
-    end,
     setParent = function(self, to)
       self.parent = to
+    end,
+    added = function(self, to)
+      return self:setParent(to)
     end,
     remove = function(self)
       if self.parent then
@@ -23,7 +23,7 @@ do
       local _list_0 = self.children
       for _index_0 = 1, #_list_0 do
         local child = _list_0[_index_0]
-        if child.draw and child.visible then
+        if child.draw and (child.visible or type(child.visible == "nil")) then
           child:draw()
         end
       end
@@ -35,7 +35,7 @@ do
       local _list_0 = self.children
       for _index_0 = 1, #_list_0 do
         local child = _list_0[_index_0]
-        if child.update and child.enabled then
+        if child.update and (child.enabled or type(child.enabled == "nil")) then
           child:update(dt)
         end
       end
@@ -110,7 +110,7 @@ do
       end
       self.enabled, self.visible = enabled, visible
       self.children = { }
-      self.parent = nil
+      self.isThing = true
       self.signals = Signals.new()
     end,
     __base = _base_0,
@@ -140,6 +140,8 @@ do
       self.addChild = nil
       self.getChild = nil
       self.removeChild = nil
+      self.drawChildren = function(self) end
+      self.updateChildren = function(self) end
     end,
     __base = _base_0,
     __name = "LeafThing",

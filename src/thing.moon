@@ -9,14 +9,14 @@ class Thing
 
 	new: (@enabled=true, @visible=true) =>
 		@children = {}
-		@parent = nil --FOR VERBOSITYYYY
+		@isThing = true --always be able to tell if Thing is in the family tree
 		@signals = Signals.new! -- all things are capable of events
-
-	added: (to) =>
-		@setParent to
 
 	setParent: (to) =>
 		@parent = to
+
+	added: (to) =>
+		@setParent to
 
 	remove: =>
 		if @parent
@@ -31,7 +31,7 @@ class Thing
 		
 	drawChildren: =>
 		for child in *@children
-			if child.draw and child.visible
+			if child.draw and (child.visible or type child.visible == "nil")
 				child\draw!
 
 
@@ -40,7 +40,7 @@ class Thing
 
 	updateChildren: (dt) =>
 		for child in *@children
-			if child.update and child.enabled
+			if child.update and (child.enabled or type child.enabled == "nil")
 				child\update dt
 
 	destroy: =>
@@ -73,9 +73,9 @@ class Thing
 		return [child for child in *@children when child.__class.__name == classs]
 
 	getChild: (classs) => --for components where there is only one
-		for child in *@children
-			if child.__class.__name == classs
-				return child
+			for child in *@children
+				if child.__class.__name == classs
+					return child
 
 class LeafThing extends Thing
 	new: (...) =>
@@ -85,6 +85,8 @@ class LeafThing extends Thing
 		@addChild = nil
 		@getChild = nil
 		@removeChild = nil -- leaves don't have children.
+		@drawChildren = =>
+		@updateChildren = =>
 
 
 {:Thing, :LeafThing}

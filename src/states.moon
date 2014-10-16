@@ -3,7 +3,7 @@
 -- which know how to update! and draw! themselves
 
 import Thing from require "thing"
-import Entity from require "entities"
+import Juni from require "entities"
 
 class State extends Thing
 	new: =>
@@ -15,10 +15,7 @@ class State extends Thing
 	enter: (previous, ...) =>
 
 	leave: =>
-
-	update: (dt) =>
-		super\update dt --not pointless at all I swear
-
+	
 	draw: => --totally override this one to support the camera
 		@camera\attach!
 		super\draw!
@@ -46,13 +43,15 @@ class worldState extends State
 
 	new: =>
 		super!
-		@camera\zoomTo 1
-		self\addChild(Entity!)
+		@dt = 0
+		@addChild(Juni 10, 10)
 		
-	cdraw: =>
+	sdraw: =>
+		love.graphics.print(1/@dt)
 		
 
 	update: (dt) =>
-		super!
+		@dt = dt
+		super dt
 
 {:State, :worldState}
