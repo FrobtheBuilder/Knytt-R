@@ -10,7 +10,8 @@ love.load = function()
   return GAMESTATE.switch(worldState())
 end
 love.update = function(dt)
-  return GAMESTATE.update(dt)
+  GAMESTATE.update(dt)
+  return TIMER.update(dt)
 end
 love.draw = function()
   return GAMESTATE.draw()

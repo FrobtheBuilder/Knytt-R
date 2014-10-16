@@ -1,4 +1,7 @@
---require "lovekit.all" --something tells me that I won't be using this much due to UTTER LACK OF DOCUMENTATION FUCK
+--require "lovekit.all" 
+-- something tells me that I won't 
+-- be using this much due to UTTER LACK OF DOCUMENTATION FUCK
+
 import State, worldState from require "states"
 
 export GAMESTATE = require "lib.hump.gamestate"

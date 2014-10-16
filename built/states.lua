@@ -1,23 +1,26 @@
+local Thing
+do
+  local _obj_0 = require("thing")
+  Thing = _obj_0.Thing
+end
+local Entity
+do
+  local _obj_0 = require("entities")
+  Entity = _obj_0.Entity
+end
 local State
 do
+  local _parent_0 = Thing
   local _base_0 = {
     init = function(self) end,
     enter = function(self, previous, ...) end,
     leave = function(self) end,
     update = function(self, dt)
-      local _list_0 = self.children
-      for _index_0 = 1, #_list_0 do
-        local child = _list_0[_index_0]
-        child:update(dt)
-      end
+      return _parent_0.update(self, dt)
     end,
     draw = function(self)
       self.camera:attach()
-      local _list_0 = self.children
-      for _index_0 = 1, #_list_0 do
-        local child = _list_0[_index_0]
-        child:draw()
-      end
+      _parent_0.draw(self)
       self:cdraw()
       self.camera:detach()
       return self:sdraw()
@@ -32,15 +35,24 @@ do
     quit = function(self) end
   }
   _base_0.__index = _base_0
+  setmetatable(_base_0, _parent_0.__base)
   local _class_0 = setmetatable({
     __init = function(self)
-      self.children = { }
+      _parent_0.__init(self)
       self.camera = Camera()
     end,
     __base = _base_0,
-    __name = "State"
+    __name = "State",
+    __parent = _parent_0
   }, {
-    __index = _base_0,
+    __index = function(cls, name)
+      local val = rawget(_base_0, name)
+      if val == nil then
+        return _parent_0[name]
+      else
+        return val
+      end
+    end,
     __call = function(cls, ...)
       local _self_0 = setmetatable({}, _base_0)
       cls.__init(_self_0, ...)
@@ -48,18 +60,18 @@ do
     end
   })
   _base_0.__class = _class_0
+  if _parent_0.__inherited then
+    _parent_0.__inherited(_parent_0, _class_0)
+  end
   State = _class_0
 end
 local worldState
 do
   local _parent_0 = State
   local _base_0 = {
-    cdraw = function(self)
-      return love.graphics.print("hello", 300, 300)
-    end,
+    cdraw = function(self) end,
     update = function(self, dt)
-      _parent_0.update(self)
-      return self.camera:move(1, dt)
+      return _parent_0.update(self)
     end
   }
   _base_0.__index = _base_0
@@ -67,7 +79,8 @@ do
   local _class_0 = setmetatable({
     __init = function(self)
       _parent_0.__init(self)
-      return self.camera:zoomTo(1)
+      self.camera:zoomTo(1)
+      return self:addChild(Entity())
     end,
     __base = _base_0,
     __name = "worldState",

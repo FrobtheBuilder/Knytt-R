@@ -1,24 +1,14 @@
--- Basically, all states have a collection of Things which know how to draw! themselves
-class State
+-- Basically, all states are things, 
+-- so they have a collection of Things 
+-- which know how to update! and draw! themselves
+
+import Thing from require "thing"
+import Entity from require "entities"
+
+class State extends Thing
 	new: =>
-		@children = {}
+		super!
 		@camera = Camera!
-
-	addChild: (child, enabled=true, visible=true) =>
-		child.enabled, child.visible = enabled, visible
-
-		-- decorate child with some new convenience functions
-		with child
-			.enable = => @enabled = true
-			.disable = => @enabled = false
-			.show = => @visible = true
-			.hide = => @visible = false
-
-		table.insert @children child
-		if child.added
-			child\added self
-		child.parent = self
-		return child
 
 	init: =>
 
@@ -27,14 +17,11 @@ class State
 	leave: =>
 
 	update: (dt) =>
-		for child in *@children
-			if child.update and child.enabled
-				child\update dt
+		super\update dt --not pointless at all I swear
 
-	draw: =>
+	draw: => --totally override this one to support the camera
 		@camera\attach!
-		for child in *@children
-			child\draw!
+		super\draw!
 		@cdraw!
 		@camera\detach!
 		@sdraw!
@@ -60,12 +47,12 @@ class worldState extends State
 	new: =>
 		super!
 		@camera\zoomTo 1
+		self\addChild(Entity!)
 		
 	cdraw: =>
-		love.graphics.print("hello", 300, 300)
+		
 
 	update: (dt) =>
 		super!
-		@camera\move(1, dt)
 
 {:State, :worldState}
