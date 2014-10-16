@@ -17,7 +17,9 @@ do
     end,
     removed = function(self) end,
     draw = function(self)
-      return self:drawChildren()
+      if self.children then
+        return self:drawChildren()
+      end
     end,
     drawChildren = function(self)
       local _list_0 = self.children
@@ -29,7 +31,9 @@ do
       end
     end,
     update = function(self, dt)
-      return self:updateChildren(dt)
+      if self.children then
+        return self:updateChildren(dt)
+      end
     end,
     updateChildren = function(self, dt)
       local _list_0 = self.children
@@ -140,8 +144,6 @@ do
       self.addChild = nil
       self.getChild = nil
       self.removeChild = nil
-      self.drawChildren = function(self) end
-      self.updateChildren = function(self) end
     end,
     __base = _base_0,
     __name = "LeafThing",

@@ -14,37 +14,37 @@ class Movement extends Component
 		super ...
 		@dx = 0
 		@dy = 0
-		@accumx = 0
-		@accumy = 0
+		@accum = {x: 0, y: 0}
+
 
 	setVelocity: (dx, dy) =>
 		@dx = dx
 		@dy = dy
 
-		@accumx = 0
-		@accumy = 0
+		@accum.x = 0
+		@accum.y = 0
 
 	update: (dt) =>
 		if @parent
 
-			@accumx += @dx*dt
-			@accumy += @dy*dt
+			@accum.x += @dx*dt
+			@accum.y += @dy*dt
 
-			if @accumx >= 1
+			if @accum.x >= 1
 				@parent.x += 1
-				@accumx -= 1
+				@accum.x -= 1
 
-			if @accumx <= -1
+			if @accum.x <= -1
 				@parent.x -= 1
-				@accumx += 1
+				@accum.x += 1
 
-			if @accumy >= 1
+			if @accum.y >= 1
 				@parent.y += 1 
-				@accumy -= 1
+				@accum.y -= 1
 
-			if @accumy <= -1
+			if @accum.y <= -1
 				@parent.y -= 1 
-				@accumy += 1
+				@accum.y += 1
 
 
 {:Component, :Movement}

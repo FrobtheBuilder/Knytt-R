@@ -27,7 +27,7 @@ class Thing
 	removed: =>
 		
 	draw: =>
-		@drawChildren!
+		if @children then @drawChildren!
 		
 	drawChildren: =>
 		for child in *@children
@@ -36,7 +36,7 @@ class Thing
 
 
 	update: (dt) =>
-		@updateChildren dt
+		if @children then @updateChildren dt
 
 	updateChildren: (dt) =>
 		for child in *@children
@@ -85,8 +85,6 @@ class LeafThing extends Thing
 		@addChild = nil
 		@getChild = nil
 		@removeChild = nil -- leaves don't have children.
-		@drawChildren = =>
-		@updateChildren = =>
 
 
 {:Thing, :LeafThing}
