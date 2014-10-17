@@ -10,41 +10,73 @@ class Component extends LeafThing
 		super to
 
 class Movement extends Component
-	new: (...) =>
-		super ...
-		@dx = 0
-		@dy = 0
+	new: (@physics, ...) =>
+		super false, ...
+		@vx = 0
+		@vy = 0
+
+		@ax = 0
+		@ay = 0
+
 		@accum = {x: 0, y: 0}
 
 
-	setVelocity: (dx, dy) =>
-		@dx = dx
-		@dy = dy
+	move: (dx, dy) =>
+		@accum.x += dx
+		@accum.y += dy
+
+		if @accum.x >= 1
+			@parent.x += 1
+			@accum.x -= 1
+
+		if @accum.x <= -1
+			@parent.x -= 1
+			@accum.x += 1
+
+		if @accum.y >= 1
+			@parent.y += 1 
+			@accum.y -= 1
+
+		if @accum.y <= -1
+			@parent.y -= 1 
+			@accum.y += 1
+
+
+
+	setVelocity: (vx, vy) =>
+		if vx then @vx = vx
+		if vy then @vy = vy
 
 		@accum.x = 0
 		@accum.y = 0
 
+	setAcceleration: (ax, ay) =>
+		if ax then @ax = ax
+		if ay then @ay = ay
+
+	accelerate: (vx, vy) =>
+		if vx then @ax += vx
+		if vy then @ax += vy
+
 	update: (dt) =>
+
+		if @physics
+			@vx = @vx/@physics.friction
+
+		@vx += @ax
+		@vy += @ay
+
+
 		if @parent
-
-			@accum.x += @dx*dt
-			@accum.y += @dy*dt
-
-			if @accum.x >= 1
-				@parent.x += 1
-				@accum.x -= 1
-
-			if @accum.x <= -1
-				@parent.x -= 1
-				@accum.x += 1
-
-			if @accum.y >= 1
-				@parent.y += 1 
-				@accum.y -= 1
-
-			if @accum.y <= -1
-				@parent.y -= 1 
-				@accum.y += 1
+			@move @vx*dt, @vy*dt
 
 
-{:Component, :Movement}
+class Physics extends Component
+	new: (options, ...) => --{ friction: , gravity: }
+		@friction = options.friction
+		@gravity = options.gravity
+		super false, ...
+
+
+
+{:Component, :Movement, :Physics}

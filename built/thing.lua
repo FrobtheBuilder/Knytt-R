@@ -66,6 +66,7 @@ do
       table.insert(self.children, child)
       if child.added then
         child:added(self)
+        self.signals:emit("added-child", child)
       end
       return child
     end,

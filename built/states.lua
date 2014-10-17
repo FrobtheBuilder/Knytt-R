@@ -8,6 +8,11 @@ do
   local _obj_0 = require("entities")
   Juni = _obj_0.Juni
 end
+local Physics
+do
+  local _obj_0 = require("components")
+  Physics = _obj_0.Physics
+end
 local State
 do
   local _parent_0 = Thing
@@ -25,8 +30,8 @@ do
     cdraw = function(self) end,
     sdraw = function(self) end,
     focus = function(self) end,
-    keypressed = function(self, key, code) end,
-    keyreleased = function(self, key, code) end,
+    keypressed = function(self, key, isrepeat) end,
+    keyreleased = function(self, key) end,
     mousepressed = function(self, x, y, button) end,
     mousereleased = function(self, x, y, button) end,
     quit = function(self) end
@@ -72,6 +77,12 @@ do
     update = function(self, dt)
       self.dt = dt
       return _parent_0.update(self, dt)
+    end,
+    keypressed = function(self, key, isrepeat)
+      return self.juni:keypressed(key, isrepeat)
+    end,
+    keyreleased = function(self, key)
+      return self.juni:keyreleased(key)
     end
   }
   _base_0.__index = _base_0
@@ -80,7 +91,11 @@ do
     __init = function(self)
       _parent_0.__init(self)
       self.dt = 0
-      return self:addChild(Juni(10, 10))
+      self.physics = self:addChild(Physics({
+        gravity = 20,
+        friction = 1.5
+      }))
+      self.juni = self:addChild(Juni(10, 10))
     end,
     __base = _base_0,
     __name = "worldState",

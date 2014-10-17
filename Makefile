@@ -2,7 +2,7 @@
 
 default: run
 
-src: assets
+src: 
 	cd src; \
 	moonc -t ../built *.moon
 

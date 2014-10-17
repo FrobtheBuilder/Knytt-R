@@ -4,6 +4,7 @@
 
 import Thing from require "thing"
 import Juni from require "entities"
+import Physics from require "components"
 
 class State extends Thing
 	new: =>
@@ -29,9 +30,9 @@ class State extends Thing
 
 	focus: =>
 
-	keypressed: (key, code) =>
+	keypressed: (key, isrepeat) =>
 
-	keyreleased: (key, code) =>
+	keyreleased: (key) =>
 
 	mousepressed: (x, y, button) =>
 
@@ -44,14 +45,20 @@ class worldState extends State
 	new: =>
 		super!
 		@dt = 0
-		@addChild(Juni 10, 10)
+		@physics = @addChild(Physics {gravity: 20, friction: 1.5})
+		@juni = @addChild(Juni 10, 10)
 		
 	sdraw: =>
 		love.graphics.print(1/@dt)
 		
-
 	update: (dt) =>
 		@dt = dt
 		super dt
+
+	keypressed: (key, isrepeat) =>
+		@juni\keypressed key, isrepeat
+
+	keyreleased: (key) =>
+		@juni\keyreleased key
 
 {:State, :worldState}

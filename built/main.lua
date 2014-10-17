@@ -20,6 +20,9 @@ end
 love.keypressed = function(key, code)
   return GAMESTATE.keypressed(key, code)
 end
+love.keyreleased = function(key)
+  return GAMESTATE.keyreleased(key)
+end
 love.mousepressed = function(x, y, button)
   return GAMESTATE.mousepressed(x, y, button)
 end

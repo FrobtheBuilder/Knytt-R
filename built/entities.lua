@@ -51,65 +51,116 @@ end
 local Juni
 do
   local _parent_0 = Entity
-  local _base_0 = { }
+  local _base_0 = {
+    added = function(self, to)
+      _parent_0.added(self, to)
+      self.movement = self:addChild(Movement(self.parent.physics))
+      self.sprite:addSets({
+        {
+          name = "walk",
+          rate = self.rate,
+          frames = {
+            {
+              "all",
+              1
+            }
+          }
+        },
+        {
+          name = "run",
+          rate = self.rate,
+          flags = {
+            strip = true
+          },
+          frames = {
+            11,
+            22
+          }
+        },
+        {
+          name = "climb",
+          rate = self.rate * 2,
+          flags = {
+            strip = true
+          },
+          frames = {
+            23,
+            30
+          }
+        },
+        {
+          name = "startfall",
+          rate = self.rate,
+          flags = {
+            strip = true
+          },
+          frames = {
+            31,
+            35
+          }
+        },
+        {
+          name = "fall",
+          rate = self.rate,
+          flags = {
+            strip = true
+          },
+          frames = {
+            36,
+            42
+          }
+        },
+        {
+          name = "stand",
+          rate = self.rate,
+          frames = {
+            {
+              8,
+              5
+            }
+          }
+        }
+      })
+      self.sprite:setSet("startfall")
+      self.sprite:setFrame(3)
+      return self.sprite:play(function()
+        print(self)
+        self.sprite:setSet("fall")
+        self.sprite:stop()
+        return print(self.sprite.raw.frame == self.sprite.raw.currentSet.frames[2])
+      end)
+    end,
+    keypressed = function(self, key, isrepeat)
+      if key == "right" then
+        self.sprite:setSet("run")
+        self.sprite:play()
+        self.movement:setAcceleration(self.runspeed, nil)
+      end
+      if key == "left" then
+        self.sprite:setSet("run")
+        self.sprite:play()
+        return self.movement:setAcceleration(-self.runspeed, nil)
+      end
+    end,
+    keyreleased = function(self, key)
+      if key == "right" or key == "left" then
+        self.movement:setAcceleration(0, nil)
+        return self.sprite:setSet("stand")
+      end
+    end
+  }
   _base_0.__index = _base_0
   setmetatable(_base_0, _parent_0.__base)
   local _class_0 = setmetatable({
     __init = function(self, ...)
       _parent_0.__init(self, ...)
+      self.rate = 15
+      self.walkspeed = 100
+      self.runspeed = 100
       self.sprite = self:addChild(Sprite("assets/img/sprites/juni.png", {
         rows = 10,
         cols = 10
       }))
-      self.move = self:addChild(Movement())
-      self.move:setVelocity(60, 60)
-      self.sprite:addSet({
-        name = "walk",
-        rate = 15,
-        frames = {
-          {
-            1,
-            1
-          },
-          {
-            2,
-            1
-          },
-          {
-            3,
-            1
-          },
-          {
-            4,
-            1
-          },
-          {
-            5,
-            1
-          },
-          {
-            6,
-            1
-          },
-          {
-            7,
-            1
-          },
-          {
-            8,
-            1
-          },
-          {
-            9,
-            1
-          },
-          {
-            10,
-            1
-          }
-        }
-      })
-      return self.sprite:setSet("walk")
     end,
     __base = _base_0,
     __name = "Juni",

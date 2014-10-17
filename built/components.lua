@@ -54,44 +54,77 @@ local Movement
 do
   local _parent_0 = Component
   local _base_0 = {
-    setVelocity = function(self, dx, dy)
-      self.dx = dx
-      self.dy = dy
-      self.accumx = 0
-      self.accumy = 0
+    move = function(self, dx, dy)
+      self.accum.x = self.accum.x + dx
+      self.accum.y = self.accum.y + dy
+      if self.accum.x >= 1 then
+        self.parent.x = self.parent.x + 1
+        self.accum.x = self.accum.x - 1
+      end
+      if self.accum.x <= -1 then
+        self.parent.x = self.parent.x - 1
+        self.accum.x = self.accum.x + 1
+      end
+      if self.accum.y >= 1 then
+        self.parent.y = self.parent.y + 1
+        self.accum.y = self.accum.y - 1
+      end
+      if self.accum.y <= -1 then
+        self.parent.y = self.parent.y - 1
+        self.accum.y = self.accum.y + 1
+      end
+    end,
+    setVelocity = function(self, vx, vy)
+      if vx then
+        self.vx = vx
+      end
+      if vy then
+        self.vy = vy
+      end
+      self.accum.x = 0
+      self.accum.y = 0
+    end,
+    setAcceleration = function(self, ax, ay)
+      if ax then
+        self.ax = ax
+      end
+      if ay then
+        self.ay = ay
+      end
+    end,
+    accelerate = function(self, vx, vy)
+      if vx then
+        self.ax = self.ax + vx
+      end
+      if vy then
+        self.ax = self.ax + vy
+      end
     end,
     update = function(self, dt)
+      if self.physics then
+        self.vx = self.vx / self.physics.friction
+      end
+      self.vx = self.vx + self.ax
+      self.vy = self.vy + self.ay
       if self.parent then
-        self.accumx = self.accumx + (self.dx * dt)
-        self.accumy = self.accumy + (self.dy * dt)
-        if self.accumx >= 1 then
-          self.parent.x = self.parent.x + 1
-          self.accumx = self.accumx - 1
-        end
-        if self.accumx <= -1 then
-          self.parent.x = self.parent.x - 1
-          self.accumx = self.accumx + 1
-        end
-        if self.accumy >= 1 then
-          self.parent.y = self.parent.y + 1
-          self.accumy = self.accumy - 1
-        end
-        if self.accumy <= -1 then
-          self.parent.y = self.parent.y - 1
-          self.accumy = self.accumy + 1
-        end
+        return self:move(self.vx * dt, self.vy * dt)
       end
     end
   }
   _base_0.__index = _base_0
   setmetatable(_base_0, _parent_0.__base)
   local _class_0 = setmetatable({
-    __init = function(self, ...)
-      _parent_0.__init(self, ...)
-      self.dx = 0
-      self.dy = 0
-      self.accumx = 0
-      self.accumy = 0
+    __init = function(self, physics, ...)
+      self.physics = physics
+      _parent_0.__init(self, false, ...)
+      self.vx = 0
+      self.vy = 0
+      self.ax = 0
+      self.ay = 0
+      self.accum = {
+        x = 0,
+        y = 0
+      }
     end,
     __base = _base_0,
     __name = "Movement",
@@ -117,7 +150,44 @@ do
   end
   Movement = _class_0
 end
+local Physics
+do
+  local _parent_0 = Component
+  local _base_0 = { }
+  _base_0.__index = _base_0
+  setmetatable(_base_0, _parent_0.__base)
+  local _class_0 = setmetatable({
+    __init = function(self, options, ...)
+      self.friction = options.friction
+      self.gravity = options.gravity
+      return _parent_0.__init(self, false, ...)
+    end,
+    __base = _base_0,
+    __name = "Physics",
+    __parent = _parent_0
+  }, {
+    __index = function(cls, name)
+      local val = rawget(_base_0, name)
+      if val == nil then
+        return _parent_0[name]
+      else
+        return val
+      end
+    end,
+    __call = function(cls, ...)
+      local _self_0 = setmetatable({}, _base_0)
+      cls.__init(_self_0, ...)
+      return _self_0
+    end
+  })
+  _base_0.__class = _class_0
+  if _parent_0.__inherited then
+    _parent_0.__inherited(_parent_0, _class_0)
+  end
+  Physics = _class_0
+end
 return {
   Component = Component,
-  Movement = Movement
+  Movement = Movement,
+  Physics = Physics
 }

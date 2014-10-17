@@ -3,10 +3,10 @@ do
   local _obj_0 = require("components")
   Component = _obj_0.Component
 end
-local Clock
+local Clock, dimConvert
 do
   local _obj_0 = require("misc")
-  Clock = _obj_0.Clock
+  Clock, dimConvert = _obj_0.Clock, _obj_0.dimConvert
 end
 local RawSprite
 do
@@ -15,7 +15,42 @@ do
       return self.clock:update(dt)
     end,
     addSet = function(self, params)
+      if type(params.frames[1]) == "table" and params.frames[1][2] == "all" then
+        local row = params.frames[1][1]
+        for i = 1, #self.quads do
+          table.insert(params.frames, {
+            row,
+            i
+          })
+        end
+        table.remove(params.frames, 1)
+      elseif type(params.frames[1]) == "table" and params.frames[1][1] == "all" then
+        local col = params.frames[1][2]
+        for i = 1, #self.quads[col] do
+          table.insert(params.frames, {
+            i,
+            col
+          })
+        end
+        table.remove(params.frames, 1)
+      end
+      if params.flags and params.flags["strip"] then
+        local cols = #self.quads
+        local start, finish = params.frames[1], params.frames[2]
+        params.frames = { }
+        for i = start, finish do
+          table.insert(params.frames, {
+            dimConvert(i, cols)
+          })
+        end
+      end
       return table.insert(self.sets, params)
+    end,
+    addSets = function(self, list)
+      for _index_0 = 1, #list do
+        local set = list[_index_0]
+        self:addSet(set)
+      end
     end,
     setSet = function(self, name)
       local _list_0 = self.sets
@@ -25,24 +60,30 @@ do
           self.currentSet = set
         end
       end
-      self.frame = self.currentSet.frames[1]
+      local onTick
+      onTick = function(e)
+        return self:setFrame(e.new)
+      end
+      self.clock.signals:clear("tick")
       if #self.currentSet.frames > 1 then
         do
           local _with_0 = self.clock
           _with_0.rate = self.currentSet.rate
-          _with_0.signals:clear()
           _with_0:reset()
-          _with_0.signals:register("tick", function(e)
-            if e.new > #self.currentSet.frames then
-              self.clock:reset()
-              self.frame = self.currentSet.frames[self.clock.hand]
-            else
-              self.frame = self.currentSet.frames[e.new]
-            end
-          end)
+          _with_0:setFace(#self.currentSet.frames)
+          _with_0.signals:register("tick", onTick)
           return _with_0
         end
       end
+    end,
+    setFrame = function(self, index)
+      self.frame = self.currentSet.frames[index]
+    end,
+    play = function(self)
+      return self.clock:start()
+    end,
+    stop = function(self)
+      return self.clock:stop()
     end,
     split = function(self, sheet, params)
       local quads = { }
@@ -63,7 +104,7 @@ do
     end,
     draw = function(self, x, y)
       if self.quads then
-        if self.currentSet.name then
+        if self.currentSet.name and self.frame then
           return love.graphics.draw(self.image, self.quads[self.frame[1]][self.frame[2]], x, y)
         end
       else
@@ -109,8 +150,14 @@ do
     addSet = function(self, params)
       return self.raw:addSet(params)
     end,
+    addSets = function(self, list)
+      return self.raw:addSets(list)
+    end,
     setSet = function(self, name)
       return self.raw:setSet(name)
+    end,
+    setFrame = function(self, index)
+      return self.raw:setFrame(index)
     end,
     offset = function(self, x, y)
       self.offset.y, self.offset.y = x, y
@@ -119,6 +166,20 @@ do
       if self.parent and self.parent.x and self.parent.y then
         return self.raw:draw(self.parent.x + self.offset.x, self.parent.y + self.offset.y)
       end
+    end,
+    play = function(self, callback)
+      self.raw:play()
+      if callback then
+        local onToll
+        onToll = function(e)
+          callback(e)
+          return self.raw.clock.signals:remove("toll", onToll)
+        end
+        return self.raw.clock.signals:register("toll", onToll)
+      end
+    end,
+    stop = function(self)
+      return self.raw:stop()
     end
   }
   _base_0.__index = _base_0

@@ -55,10 +55,11 @@ class Thing
 	show: => @visible = true
 	hide: => @visible = false
 
-	addChild: (child) =>		
+	addChild: (child) =>
 		table.insert @children, child
 		if child.added
 			child\added self
+			@signals\emit "added-child", child
 		return child --for fast instantiation
 
 	removeChild: (child) =>

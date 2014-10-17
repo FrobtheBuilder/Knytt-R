@@ -21,7 +21,10 @@ love.draw = ->
 	GAMESTATE.draw!
 
 love.keypressed = (key, code) ->
-	GAMESTATE.keypressed(key, code)
+	GAMESTATE.keypressed key, code
+
+love.keyreleased = (key) ->
+	GAMESTATE.keyreleased key
 
 love.mousepressed = (x, y, button) ->
 	GAMESTATE.mousepressed(x, y, button)
