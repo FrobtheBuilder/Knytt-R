@@ -45,8 +45,8 @@ class worldState extends State
 	new: =>
 		super!
 		@dt = 0
-		@physics = @addChild(Physics {gravity: 20, friction: 1.5})
-		@juni = @addChild(Juni 10, 10)
+		@physics = @addChild(Physics {gravity: 20, friction: 2000})
+		@juni = @addChild(Juni 10, 500)
 		
 	sdraw: =>
 		love.graphics.print(1/@dt)

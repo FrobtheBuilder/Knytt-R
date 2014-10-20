@@ -3,6 +3,11 @@ do
   local _obj_0 = require("states")
   State, worldState = _obj_0.State, _obj_0.worldState
 end
+local EventEmitter
+do
+  local _obj_0 = require("event")
+  EventEmitter = _obj_0.EventEmitter
+end
 GAMESTATE = require("lib.hump.gamestate")
 TIMER = require("lib.hump.timer")
 Camera = require("lib.hump.camera")

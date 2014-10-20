@@ -34,7 +34,10 @@ do
         end
         table.remove(params.frames, 1)
       end
-      if params.flags and params.flags["strip"] then
+      if not params.flags then
+        params.flags = { }
+      end
+      if params.flags["strip"] then
         local cols = #self.quads
         local start, finish = params.frames[1], params.frames[2]
         params.frames = { }
@@ -52,6 +55,15 @@ do
         self:addSet(set)
       end
     end,
+    setFlip = function(self, direction)
+      if type(direction) == "boolean" then
+        if self.currentSet then
+          self.currentSet.flags.flipped = direction
+        end
+      else
+        self.currentSet.flags.flipped = (direction == "left")
+      end
+    end,
     setSet = function(self, name)
       local _list_0 = self.sets
       for _index_0 = 1, #_list_0 do
@@ -60,20 +72,20 @@ do
           self.currentSet = set
         end
       end
-      local onTick
-      onTick = function(e)
-        return self:setFrame(e.new)
-      end
-      self.clock.signals:clear("tick")
+      self.clock.evt:remove("tick")
       if #self.currentSet.frames > 1 then
         do
           local _with_0 = self.clock
           _with_0.rate = self.currentSet.rate
           _with_0:reset()
           _with_0:setFace(#self.currentSet.frames)
-          _with_0.signals:register("tick", onTick)
+          _with_0.evt:on("tick", function(e)
+            return self:setFrame(e.new)
+          end)
           return _with_0
         end
+      else
+        return self:setFrame(1)
       end
     end,
     setFrame = function(self, index)
@@ -100,12 +112,16 @@ do
           quads[x][y] = love.graphics.newQuad((x * w) - w, (y * h) - h, w, h, self.image:getDimensions())
         end
       end
-      return quads
+      return quads, w, h
     end,
     draw = function(self, x, y)
       if self.quads then
         if self.currentSet.name and self.frame then
-          return love.graphics.draw(self.image, self.quads[self.frame[1]][self.frame[2]], x, y)
+          if not self.currentSet.flags.flipped then
+            return love.graphics.draw(self.image, self.quads[self.frame[1]][self.frame[2]], x, y)
+          else
+            return love.graphics.draw(self.image, self.quads[self.frame[1]][self.frame[2]], x, y, 0, -1, 1, self.cellWidth, 0)
+          end
         end
       else
         return love.graphics.draw(self.image, x, y)
@@ -121,7 +137,7 @@ do
       self.clock = Clock()
       self.frame = { }
       if (params.rows or params.cols) and (params.cols > 1 or params.rows > 1) then
-        self.quads = self:split(self.image, params)
+        self.quads, self.cellWidth, self.cellHeight = self:split(self.image, params)
       end
     end,
     __base = _base_0,
@@ -154,10 +170,15 @@ do
       return self.raw:addSets(list)
     end,
     setSet = function(self, name)
-      return self.raw:setSet(name)
+      self.raw:setSet(name)
+      return self.raw:setFlip(self.facing)
     end,
     setFrame = function(self, index)
       return self.raw:setFrame(index)
+    end,
+    setFlip = function(self, direction)
+      self.facing = direction
+      return self.raw:setFlip(direction)
     end,
     offset = function(self, x, y)
       self.offset.y, self.offset.y = x, y
@@ -170,12 +191,9 @@ do
     play = function(self, callback)
       self.raw:play()
       if callback then
-        local onToll
-        onToll = function(e)
-          callback(e)
-          return self.raw.clock.signals:remove("toll", onToll)
-        end
-        return self.raw.clock.signals:register("toll", onToll)
+        return self.raw.clock.evt:once("toll", function(e)
+          return callback(e)
+        end)
       end
     end,
     stop = function(self)
@@ -192,6 +210,7 @@ do
         x = 0,
         y = 0
       }
+      self.facing = "right"
     end,
     __base = _base_0,
     __name = "Sprite",

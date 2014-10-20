@@ -54,7 +54,11 @@ do
   local _base_0 = {
     added = function(self, to)
       _parent_0.added(self, to)
-      self.movement = self:addChild(Movement(self.parent.physics))
+      self.movement = self:addChild(Movement({
+        gravity = 20,
+        friction = 2000
+      }))
+      self.movement.vmax.x = self.topspeed
       self.sprite:addSets({
         {
           name = "walk",
@@ -68,7 +72,7 @@ do
         },
         {
           name = "run",
-          rate = self.rate,
+          rate = self.rate + 6,
           flags = {
             strip = true
           },
@@ -131,20 +135,30 @@ do
       end)
     end,
     keypressed = function(self, key, isrepeat)
+      self.movement.moving = true
       if key == "right" then
+        self.movingRight = true
         self.sprite:setSet("run")
+        self.sprite:setFlip("right")
         self.sprite:play()
-        self.movement:setAcceleration(self.runspeed, nil)
-      end
-      if key == "left" then
+        return self.movement:setAcceleration(self.runspeed, nil)
+      elseif key == "left" then
+        self.movingLeft = true
         self.sprite:setSet("run")
+        self.sprite:setFlip("left")
         self.sprite:play()
         return self.movement:setAcceleration(-self.runspeed, nil)
       end
     end,
     keyreleased = function(self, key)
-      if key == "right" or key == "left" then
-        self.movement:setAcceleration(0, nil)
+      if key == "right" then
+        self.movingRight = false
+      end
+      if key == "left" then
+        self.movingLeft = false
+      end
+      if not self.movingLeft and not self.movingRight then
+        self.movement.moving = false
         return self.sprite:setSet("stand")
       end
     end
@@ -156,7 +170,10 @@ do
       _parent_0.__init(self, ...)
       self.rate = 15
       self.walkspeed = 100
-      self.runspeed = 100
+      self.runspeed = 6000
+      self.topspeed = 300
+      self.movingRight = false
+      self.movingLeft = false
       self.sprite = self:addChild(Sprite("assets/img/sprites/juni.png", {
         rows = 10,
         cols = 10

@@ -93,9 +93,9 @@ do
       self.dt = 0
       self.physics = self:addChild(Physics({
         gravity = 20,
-        friction = 1.5
+        friction = 2000
       }))
-      self.juni = self:addChild(Juni(10, 10))
+      self.juni = self:addChild(Juni(10, 500))
     end,
     __base = _base_0,
     __name = "worldState",

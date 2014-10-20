@@ -16,7 +16,7 @@ class RawSprite
 		@frame = {}
 
 		if (params.rows or params.cols) and (params.cols > 1 or params.rows > 1)
-			@quads = @split @image, params
+			@quads, @cellWidth, @cellHeight = @split @image, params
 
 	update: (dt) =>
 		@clock\update dt
@@ -34,7 +34,9 @@ class RawSprite
 				table.insert params.frames, {i, col}
 			table.remove params.frames, 1
 
-		if params.flags and params.flags["strip"]
+		if not params.flags then params.flags = {}
+
+		if params.flags["strip"]
 			cols = #@quads
 			start, finish = params.frames[1], params.frames[2]
 			params.frames = {}
@@ -48,25 +50,28 @@ class RawSprite
 		for set in *list
 			@addSet(set)
 
+	setFlip: (direction) =>
+		if type(direction) == "boolean"
+			if @currentSet then @currentSet.flags.flipped = direction
+		else
+			@currentSet.flags.flipped = (direction == "left")
+
 	setSet: (name) =>
-		
 		for set in *@sets
 			if set.name == name
 				@currentSet = set
-		--@frame = @currentSet.frames[1]
-		
-		
-		onTick = (e) ->
-			@setFrame(e.new)
-
-		@clock.signals\clear "tick"
+				
+		@clock.evt\remove "tick"
 
 		if #@currentSet.frames > 1
 			with @clock
 				.rate = @currentSet.rate
 				\reset!
 				\setFace #@currentSet.frames
-				.signals\register "tick", onTick
+				.evt\on "tick", (e) ->
+					@setFrame(e.new)
+		else
+			@setFrame(1)
 						
 
 	setFrame: (index) =>
@@ -88,13 +93,16 @@ class RawSprite
 			quads[x] = {}
 			for y=1, rows
 				quads[x][y] = love.graphics.newQuad((x*w)-w, (y*h)-h, w, h, @image\getDimensions!)
-		return quads
+		return quads, w, h
 
 	draw: (x, y) => --Nonstandard signature, watch out.
 
 		if @quads
 			if @currentSet.name and @frame
-				love.graphics.draw(@image, @quads[@frame[1]][@frame[2]], x, y)
+				if not @currentSet.flags.flipped
+					love.graphics.draw(@image, @quads[@frame[1]][@frame[2]], x, y)
+				else
+					love.graphics.draw(@image, @quads[@frame[1]][@frame[2]], x, y, 0, -1, 1, @cellWidth, 0)
 		else
 			love.graphics.draw(@image, x, y)
 
@@ -104,7 +112,7 @@ class Sprite extends Component
 		super ...
 		@raw = RawSprite filepath, params --yeah, Sprite is really just a decorator for RawSprite
 		@offset = {x: 0, y: 0}
-
+		@facing = "right"
 
 	added: (to) =>
 		super\added to
@@ -120,9 +128,14 @@ class Sprite extends Component
 
 	setSet: (name) =>
 		@raw\setSet name
+		@raw\setFlip @facing
 
 	setFrame: (index) =>
 		@raw\setFrame index
+
+	setFlip: (direction) =>
+		@facing = direction
+		@raw\setFlip direction
 
 	offset: (x, y) =>
 		@offset.y, @offset.y = x, y
@@ -134,12 +147,8 @@ class Sprite extends Component
 	play: (callback) =>
 		@raw\play!
 		if callback
-
-			onToll = (e) ->
+			@raw.clock.evt\once "toll", (e) ->
 				callback e
-				@raw.clock.signals\remove "toll", onToll
-			@raw.clock.signals\register "toll", onToll
-
 
 	stop: =>
 		@raw\stop!

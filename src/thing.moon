@@ -4,13 +4,14 @@
 -- Can contain other things that also know how to do this (or even not).
 -- Don't forget to super! or *Children! if you want to use this functionality.
 
-Signals = require "lib.hump.signal"
+import EventEmitter from require "event"
 class Thing 
 
 	new: (@enabled=true, @visible=true) =>
 		@children = {}
 		@isThing = true --always be able to tell if Thing is in the family tree
-		@signals = Signals.new! -- all things are capable of events
+		@evt = EventEmitter! -- all things are capable of events
+		@signals = @evt
 
 	setParent: (to) =>
 		@parent = to
@@ -59,7 +60,7 @@ class Thing
 		table.insert @children, child
 		if child.added
 			child\added self
-			@signals\emit "added-child", child
+			@signals\fire "added-child", child
 		return child --for fast instantiation
 
 	removeChild: (child) =>

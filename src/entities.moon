@@ -13,13 +13,17 @@ class Juni extends Entity
 		super ...
 		@rate = 15
 		@walkspeed = 100
-		@runspeed = 100
+		@runspeed = 6000
+		@topspeed = 300
+		@movingRight = false
+		@movingLeft = false
 		@sprite = @addChild(Sprite "assets/img/sprites/juni.png", {rows: 10, cols: 10})
 		
 
 	added: (to) =>
 		super to
-		@movement = @addChild(Movement @parent.physics)
+		@movement = @addChild(Movement gravity: 20, friction: 2000)
+		@movement.vmax.x = @topspeed
 
 		@sprite\addSets {
 			{
@@ -31,7 +35,7 @@ class Juni extends Entity
 			}
 			{
 				name: "run"
-				rate: @rate
+				rate: @rate+6
 				flags: {strip: true}
 				frames: {11, 22}
 			}
@@ -73,20 +77,28 @@ class Juni extends Entity
 			print @sprite.raw.frame == @sprite.raw.currentSet.frames[2]
 
 	keypressed: (key, isrepeat) =>
+		@movement.moving = true
 		if key == "right"
+			@movingRight = true
 			@sprite\setSet "run"
+			@sprite\setFlip "right"
 			@sprite\play!
 
 			@movement\setAcceleration @runspeed, nil
 
-		if key == "left"
+		elseif key == "left"
+			@movingLeft = true
 			@sprite\setSet "run"
+			@sprite\setFlip "left"
 			@sprite\play!
 			@movement\setAcceleration -@runspeed, nil
 
 	keyreleased: (key) =>
-		if key == "right" or key == "left"
-			@movement\setAcceleration 0, nil
+		if key == "right" then @movingRight = false
+		if key == "left" then @movingLeft = false
+
+		if not @movingLeft and not @movingRight
+			@movement.moving = false
 			@sprite\setSet "stand"
 
 {:Entity, :Juni}

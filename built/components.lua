@@ -76,38 +76,51 @@ do
     end,
     setVelocity = function(self, vx, vy)
       if vx then
-        self.vx = vx
+        self.v.x = vx
       end
       if vy then
-        self.vy = vy
+        self.v.y = vy
       end
       self.accum.x = 0
       self.accum.y = 0
     end,
     setAcceleration = function(self, ax, ay)
       if ax then
-        self.ax = ax
+        self.a.x = ax
       end
       if ay then
-        self.ay = ay
+        self.a.y = ay
       end
     end,
     accelerate = function(self, vx, vy)
       if vx then
-        self.ax = self.ax + vx
+        self.a.x = self.a.x + vx
       end
       if vy then
-        self.ax = self.ax + vy
+        self.a.x = self.a.x + vy
       end
     end,
     update = function(self, dt)
       if self.physics then
-        self.vx = self.vx / self.physics.friction
+        if self.v.x > 0 then
+          self.v.x = self.v.x - (self.physics.friction * dt)
+        else
+          self.v.x = self.v.x + (self.physics.friction * dt)
+        end
       end
-      self.vx = self.vx + self.ax
-      self.vy = self.vy + self.ay
+      if self.v.x < self.vmax.x and self.v.x > -self.vmax.x then
+        self.v.x = self.v.x + (self.a.x * dt)
+      elseif self.v.x > self.vmax.x then
+        self.v.x = self.vmax.x
+      else
+        self.v.x = -self.vmax.x
+      end
+      self.v.y = self.v.y + (self.a.y * dt)
       if self.parent then
-        return self:move(self.vx * dt, self.vy * dt)
+        self:move(self.v.x * dt, self.v.y * dt)
+      end
+      if not self.moving then
+        self.a.x, self.a.y = 0, 0
       end
     end
   }
@@ -117,14 +130,23 @@ do
     __init = function(self, physics, ...)
       self.physics = physics
       _parent_0.__init(self, false, ...)
-      self.vx = 0
-      self.vy = 0
-      self.ax = 0
-      self.ay = 0
+      self.v = {
+        x = 0,
+        y = 0
+      }
+      self.vmax = {
+        x = 0,
+        y = 0
+      }
+      self.a = {
+        x = 0,
+        y = 0
+      }
       self.accum = {
         x = 0,
         y = 0
       }
+      self.moving = false
     end,
     __base = _base_0,
     __name = "Movement",

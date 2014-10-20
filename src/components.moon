@@ -12,18 +12,25 @@ class Component extends LeafThing
 class Movement extends Component
 	new: (@physics, ...) =>
 		super false, ...
-		@vx = 0
-		@vy = 0
 
-		@ax = 0
-		@ay = 0
+		@v = {x: 0, y: 0}
+		--@vx = 0
+		--@vy = 0
+		@vmax = {x: 0, y: 0}
+
+		@a = {x: 0, y: 0}
+		--@ax = 0
+		--@ay = 0
 
 		@accum = {x: 0, y: 0}
+		@moving = false
+		
 
 
 	move: (dx, dy) =>
 		@accum.x += dx
 		@accum.y += dy
+
 
 		if @accum.x >= 1
 			@parent.x += 1
@@ -44,32 +51,42 @@ class Movement extends Component
 
 
 	setVelocity: (vx, vy) =>
-		if vx then @vx = vx
-		if vy then @vy = vy
+		if vx then @v.x = vx
+		if vy then @v.y = vy
 
 		@accum.x = 0
 		@accum.y = 0
 
 	setAcceleration: (ax, ay) =>
-		if ax then @ax = ax
-		if ay then @ay = ay
+		if ax then @a.x = ax
+		if ay then @a.y = ay
 
 	accelerate: (vx, vy) =>
-		if vx then @ax += vx
-		if vy then @ax += vy
+		if vx then @a.x += vx
+		if vy then @a.x += vy
 
 	update: (dt) =>
 
 		if @physics
-			@vx = @vx/@physics.friction
+			if @v.x > 0 
+				@v.x -= (@physics.friction*dt)
+			else
+				@v.x += (@physics.friction*dt)
 
-		@vx += @ax
-		@vy += @ay
+		if @v.x < @vmax.x and @v.x > -@vmax.x
+			@v.x += @a.x*dt
+		elseif @v.x > @vmax.x
+			@v.x = @vmax.x
+		else
+			@v.x = -@vmax.x
+		@v.y += @a.y*dt
 
 
 		if @parent
-			@move @vx*dt, @vy*dt
+			@move @v.x*dt, @v.y*dt
 
+		if not @moving
+			@a.x, @a.y = 0, 0
 
 class Physics extends Component
 	new: (options, ...) => --{ friction: , gravity: }

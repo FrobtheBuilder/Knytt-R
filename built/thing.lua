@@ -1,4 +1,8 @@
-local Signals = require("lib.hump.signal")
+local EventEmitter
+do
+  local _obj_0 = require("event")
+  EventEmitter = _obj_0.EventEmitter
+end
 local Thing
 do
   local _base_0 = {
@@ -66,7 +70,7 @@ do
       table.insert(self.children, child)
       if child.added then
         child:added(self)
-        self.signals:emit("added-child", child)
+        self.signals:fire("added-child", child)
       end
       return child
     end,
@@ -116,7 +120,8 @@ do
       self.enabled, self.visible = enabled, visible
       self.children = { }
       self.isThing = true
-      self.signals = Signals.new()
+      self.evt = EventEmitter()
+      self.signals = self.evt
     end,
     __base = _base_0,
     __name = "Thing"

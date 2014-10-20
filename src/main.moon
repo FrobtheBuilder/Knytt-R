@@ -3,6 +3,7 @@
 -- be using this much due to UTTER LACK OF DOCUMENTATION FUCK
 
 import State, worldState from require "states"
+import EventEmitter from require "event"
 
 export GAMESTATE = require "lib.hump.gamestate"
 export TIMER = require "lib.hump.timer"

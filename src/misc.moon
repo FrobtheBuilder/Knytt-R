@@ -1,11 +1,11 @@
 import LeafThing from require "thing"
-Signals = require "lib.hump.signal"
+import EventEmitter from require "event"
 
 class Clock --yes it's like an actual clock
 	new: (@face = 12, @rate=1, @time=1, ...) =>
 		@enabled = false --start out stopped
 		@visible = false
-		@signals = Signals.new! -- for Thing compatibility
+		@evt = EventEmitter! -- for Thing compatibility
 
 		@hand = @time
 		@face = 12
@@ -27,9 +27,9 @@ class Clock --yes it's like an actual clock
 
 			if oldHand != @hand
 				if @hand > @face
-					@signals\emit("toll", {at: oldHand})
+					@evt\fire("toll", {at: oldHand})
 					@reset!
-				@signals\emit("tick", {old: oldHand, new: @hand})
+				@evt\fire("tick", {old: oldHand, new: @hand})
 
 
 	reset: =>
@@ -49,7 +49,6 @@ dimConvert = (num, width) ->
 			x = 1
 			y += 1
 	return x, y
-
 
 
 {:Clock, :dimConvert}

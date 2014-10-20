@@ -3,7 +3,11 @@ do
   local _obj_0 = require("thing")
   LeafThing = _obj_0.LeafThing
 end
-local Signals = require("lib.hump.signal")
+local EventEmitter
+do
+  local _obj_0 = require("event")
+  EventEmitter = _obj_0.EventEmitter
+end
 local Clock
 do
   local _base_0 = {
@@ -23,12 +27,12 @@ do
         self.hand = math.floor(self.time)
         if oldHand ~= self.hand then
           if self.hand > self.face then
-            self.signals:emit("toll", {
+            self.evt:fire("toll", {
               at = oldHand
             })
             self:reset()
           end
-          return self.signals:emit("tick", {
+          return self.evt:fire("tick", {
             old = oldHand,
             new = self.hand
           })
@@ -55,7 +59,7 @@ do
       self.face, self.rate, self.time = face, rate, time
       self.enabled = false
       self.visible = false
-      self.signals = Signals.new()
+      self.evt = EventEmitter()
       self.hand = self.time
       self.face = 12
     end,
