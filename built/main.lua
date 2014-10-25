@@ -11,6 +11,7 @@ end
 GAMESTATE = require("lib.hump.gamestate")
 TIMER = require("lib.hump.timer")
 Camera = require("lib.hump.camera")
+DEBUG = true
 love.load = function()
   love.graphics.setBackgroundColor(0, 0, 255)
   return GAMESTATE.switch(worldState())
@@ -20,6 +21,8 @@ love.update = function(dt)
   return TIMER.update(dt)
 end
 love.draw = function()
+  love.graphics.print(love.timer.getFPS())
+  love.graphics.print(love.timer.getAverageDelta(), 0, 30)
   return GAMESTATE.draw()
 end
 love.keypressed = function(key, code)

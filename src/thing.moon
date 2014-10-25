@@ -1,8 +1,10 @@
 -- basically a general purpose node that can be extended for 
---gamestates, entities, components you name it
+-- gamestates, entities you name it
 -- knows how to update/draw/etc self. 
 -- Can contain other things that also know how to do this (or even not).
 -- Don't forget to super! or *Children! if you want to use this functionality.
+
+-- probably actually a bad idea.
 
 import EventEmitter from require "event"
 class Thing 

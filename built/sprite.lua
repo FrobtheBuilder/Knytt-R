@@ -180,12 +180,12 @@ do
       self.facing = direction
       return self.raw:setFlip(direction)
     end,
-    offset = function(self, x, y)
-      self.offset.y, self.offset.y = x, y
+    offSet = function(self, x, y)
+      self.offset.x, self.offset.y = x, y
     end,
     draw = function(self)
       if self.parent and self.parent.x and self.parent.y then
-        return self.raw:draw(self.parent.x + self.offset.x, self.parent.y + self.offset.y)
+        return self.raw:draw(self.parent.x - self.offset.x, self.parent.y - self.offset.y)
       end
     end,
     play = function(self, callback)

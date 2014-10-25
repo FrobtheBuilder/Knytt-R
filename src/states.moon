@@ -3,8 +3,10 @@
 -- which know how to update! and draw! themselves
 
 import Thing from require "thing"
-import Juni from require "entities"
+import Juni from require "juni"
 import Physics from require "components"
+import sign, fixed_time_step from require "misc"
+
 
 class State extends Thing
 	new: =>
@@ -45,13 +47,12 @@ class worldState extends State
 	new: =>
 		super!
 		@dt = 0
-		@physics = @addChild(Physics {gravity: 20, friction: 2000})
 		@juni = @addChild(Juni 10, 500)
 		
 	sdraw: =>
 		love.graphics.print(1/@dt)
 		
-	update: (dt) =>
+	update: fixed_time_step 60, (dt) =>
 		@dt = dt
 		super dt
 

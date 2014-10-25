@@ -9,7 +9,7 @@ export GAMESTATE = require "lib.hump.gamestate"
 export TIMER = require "lib.hump.timer"
 export Camera = require "lib.hump.camera"
 
-
+export DEBUG = true
 love.load = ->
 	love.graphics.setBackgroundColor(0, 0, 255)
 	GAMESTATE.switch(worldState!)
@@ -19,6 +19,8 @@ love.update = (dt) ->
 	TIMER.update dt
 
 love.draw = ->
+	love.graphics.print(love.timer.getFPS!)
+	love.graphics.print love.timer.getAverageDelta!, 0, 30
 	GAMESTATE.draw!
 
 love.keypressed = (key, code) ->

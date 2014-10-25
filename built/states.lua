@@ -5,13 +5,18 @@ do
 end
 local Juni
 do
-  local _obj_0 = require("entities")
+  local _obj_0 = require("juni")
   Juni = _obj_0.Juni
 end
 local Physics
 do
   local _obj_0 = require("components")
   Physics = _obj_0.Physics
+end
+local sign, fixed_time_step
+do
+  local _obj_0 = require("misc")
+  sign, fixed_time_step = _obj_0.sign, _obj_0.fixed_time_step
 end
 local State
 do
@@ -74,10 +79,10 @@ do
     sdraw = function(self)
       return love.graphics.print(1 / self.dt)
     end,
-    update = function(self, dt)
+    update = fixed_time_step(60, function(self, dt)
       self.dt = dt
       return _parent_0.update(self, dt)
-    end,
+    end),
     keypressed = function(self, key, isrepeat)
       return self.juni:keypressed(key, isrepeat)
     end,
@@ -91,10 +96,6 @@ do
     __init = function(self)
       _parent_0.__init(self)
       self.dt = 0
-      self.physics = self:addChild(Physics({
-        gravity = 20,
-        friction = 2000
-      }))
       self.juni = self:addChild(Juni(10, 500))
     end,
     __base = _base_0,

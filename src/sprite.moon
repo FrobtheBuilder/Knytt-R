@@ -137,12 +137,12 @@ class Sprite extends Component
 		@facing = direction
 		@raw\setFlip direction
 
-	offset: (x, y) =>
-		@offset.y, @offset.y = x, y
+	offSet: (x, y) =>
+		@offset.x, @offset.y = x, y
 
 	draw: =>
 		if @parent and @parent.x and @parent.y
-			@raw\draw(@parent.x + @offset.x, @parent.y + @offset.y)
+			@raw\draw(@parent.x - @offset.x, @parent.y - @offset.y)
 
 	play: (callback) =>
 		@raw\play!
