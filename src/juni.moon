@@ -70,10 +70,8 @@ class Juni extends Entity
 
 
 		@sprite\play ->
-			print self
 			@sprite\setSet "fall"
 			@sprite\stop!
-			print @sprite.raw.frame == @sprite.raw.currentSet.frames[2]
 
 	keypressed: (key, isrepeat) =>
 		@movement.moving = true

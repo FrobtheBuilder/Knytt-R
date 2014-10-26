@@ -8,6 +8,11 @@ do
   local _obj_0 = require("juni")
   Juni = _obj_0.Juni
 end
+local Tilemap, Tileset
+do
+  local _obj_0 = require("tilemap")
+  Tilemap, Tileset = _obj_0.Tilemap, _obj_0.Tileset
+end
 local Physics
 do
   local _obj_0 = require("components")
@@ -79,9 +84,13 @@ do
     sdraw = function(self)
       return love.graphics.print(1 / self.dt)
     end,
+    cdraw = function(self)
+      return self.map:draw()
+    end,
     update = fixed_time_step(60, function(self, dt)
       self.dt = dt
-      return _parent_0.update(self, dt)
+      _parent_0.update(self, dt)
+      return self.camera:lookAt(self.juni.x, self.juni.y - 150)
     end),
     keypressed = function(self, key, isrepeat)
       return self.juni:keypressed(key, isrepeat)
@@ -97,6 +106,18 @@ do
       _parent_0.__init(self)
       self.dt = 0
       self.juni = self:addChild(Juni(10, 500))
+      self.map = Tilemap({
+        Tileset("assets/img/tilesets/Tileset1.png", 16, 8, 24)
+      })
+      return self.map:load({
+        type = "empty",
+        data = {
+          c = 10,
+          r = 10,
+          l = 1,
+          set = 1
+        }
+      })
     end,
     __base = _base_0,
     __name = "worldState",

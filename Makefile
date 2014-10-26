@@ -9,7 +9,7 @@ src:
 run: src
 	love built
 
-lovekit::
+lovekit:
 	cd src/lib/lovekit; \
 	moonc -t ../../../built lovekit
 

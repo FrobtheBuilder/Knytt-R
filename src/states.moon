@@ -4,6 +4,7 @@
 
 import Thing from require "thing"
 import Juni from require "juni"
+import Tilemap, Tileset from require "tilemap"
 import Physics from require "components"
 import sign, fixed_time_step from require "misc"
 
@@ -48,13 +49,19 @@ class worldState extends State
 		super!
 		@dt = 0
 		@juni = @addChild(Juni 10, 500)
+		@map = Tilemap {Tileset "assets/img/tilesets/Tileset1.png", 16, 8, 24}
+		@map\load type: "empty", data: {c: 10, r: 10, l: 1, set: 1}
 		
 	sdraw: =>
 		love.graphics.print(1/@dt)
+
+	cdraw: =>
+		@map\draw!
 		
 	update: fixed_time_step 60, (dt) =>
 		@dt = dt
 		super dt
+		@camera\lookAt @juni.x, @juni.y-150
 
 	keypressed: (key, isrepeat) =>
 		@juni\keypressed key, isrepeat

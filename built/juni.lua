@@ -105,10 +105,8 @@ do
       self.sprite:setSet("startfall")
       self.sprite:setFrame(3)
       return self.sprite:play(function()
-        print(self)
         self.sprite:setSet("fall")
-        self.sprite:stop()
-        return print(self.sprite.raw.frame == self.sprite.raw.currentSet.frames[2])
+        return self.sprite:stop()
       end)
     end,
     keypressed = function(self, key, isrepeat)
