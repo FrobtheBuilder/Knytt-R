@@ -11,7 +11,7 @@ end
 GAMESTATE = require("lib.hump.gamestate")
 TIMER = require("lib.hump.timer")
 Camera = require("lib.hump.camera")
-DEBUG = true
+DEBUG = false
 love.load = function()
   love.graphics.setBackgroundColor(0, 0, 255)
   return GAMESTATE.switch(worldState())

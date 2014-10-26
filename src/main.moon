@@ -9,7 +9,7 @@ export GAMESTATE = require "lib.hump.gamestate"
 export TIMER = require "lib.hump.timer"
 export Camera = require "lib.hump.camera"
 
-export DEBUG = true
+export DEBUG = false
 love.load = ->
 	love.graphics.setBackgroundColor(0, 0, 255)
 	GAMESTATE.switch(worldState!)
