@@ -40,29 +40,58 @@ do
         for c = 1, source.data.c do
           table.insert(self.tiles[source.data.l], { })
           for r = 1, source.data.r do
-            table.insert(self.tiles[source.data.l][c], Tile(self.tilesets[source.data.set], 1, 3))
+            table.insert(self.tiles[source.data.l][c], Tile(self.tilesets[source.data.set], 1, 2))
           end
         end
       end
     end,
     draw = function(self)
-      if self.tiles[1] and self.tiles[1][1] and self.tiles[1][1][1] then
-        for c = 1, #self.tiles[1] do
-          for r = 1, #self.tiles[1][c] do
-            self.tiles[1][c][r]:draw(c * 24, r * 24)
+      self.viewport:refresh()
+      local _list_0 = self.tiles
+      for _index_0 = 1, #_list_0 do
+        local layer = _list_0[_index_0]
+        if layer[1] and layer[1][1] then
+          for c = 1, #layer do
+            for r = 1, #layer[c] do
+              local realX, realY = self:real(c, r, layer[c][r])
+              if realX > (self.viewport.x - (self.viewport.hWidth + layer[c][r].tileset.cell.width)) then
+                if realX < (self.viewport.x + self.viewport.hWidth) then
+                  if realY > (self.viewport.y - (self.viewport.hHeight + layer[c][r].tileset.cell.width)) then
+                    if realY < (self.viewport.y + self.viewport.hHeight) then
+                      layer[c][r]:draw(self:real(c, r, layer[c][r]))
+                    end
+                  end
+                end
+              end
+            end
           end
         end
       end
+    end,
+    real = function(self, c, r, tile)
+      return (c - 1) * tile.tileset.cell.width, (r - 1) * tile.tileset.cell.height
     end
   }
   _base_0.__index = _base_0
   local _class_0 = setmetatable({
-    __init = function(self, tilesets)
+    __init = function(self, tilesets, x, y, viewportFunc)
       if tilesets == nil then
         tilesets = { }
       end
-      self.tilesets = tilesets
+      self.tilesets, self.x, self.y = tilesets, x, y
+      self.viewport = { }
+      do
+        local _with_0 = self.viewport
+        _with_0.x, _with_0.y = viewportFunc()
+        _with_0.width, _with_0.height = love.window.getDimensions()
+        _with_0.hWidth, _with_0.hHeight = _with_0.width / 2, _with_0.height / 2
+        _with_0.func = viewportFunc
+        _with_0.refresh = function(self)
+          self.x, self.y = self.func()
+        end
+      end
       self.tiles = { }
+      self.bounds = Box(0, 0, 30, 30)
     end,
     __base = _base_0,
     __name = "Tilemap"
@@ -82,7 +111,7 @@ do
   local _base_0 = {
     getTileQuad = function(self, col, row)
       self.col, self.row = col, row
-      return love.graphics.newQuad(self.col * self.cell.width, self.row * self.cell.height, self.cell.width, self.cell.height, self.raw.width, self.raw.height)
+      return love.graphics.newQuad((self.col - 1) * self.cell.width, (self.row - 1) * self.cell.height, self.cell.width, self.cell.height, self.real.width, self.real.height)
     end
   }
   _base_0.__index = _base_0
@@ -90,7 +119,7 @@ do
     __init = function(self, path, cols, rows, cell)
       self.cols, self.rows = cols, rows
       self.image = love.graphics.newImage(path)
-      self.raw = {
+      self.real = {
         width = self.image:getWidth(),
         height = self.image:getHeight()
       }
@@ -105,7 +134,6 @@ do
           height = cell
         }
       end
-      return print(self.cell.width, self.cell.height)
     end,
     __base = _base_0,
     __name = "Tileset"

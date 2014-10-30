@@ -38,7 +38,7 @@ class RawSprite
 
 		if params.flags["strip"]
 			cols = #@quads
-			start, finish = params.frames[1], params.frames[2]
+			start, finish = unpack params.frames
 			params.frames = {}
 
 			for i=start, finish
@@ -95,14 +95,14 @@ class RawSprite
 				quads[x][y] = love.graphics.newQuad((x*w)-w, (y*h)-h, w, h, @image\getDimensions!)
 		return quads, w, h
 
-	draw: (x, y) => --Nonstandard signature, watch out.
+	draw: (x, y) =>
 
 		if @quads
 			if @currentSet.name and @frame
 				if not @currentSet.flags.flipped
-					love.graphics.draw(@image, @quads[@frame[1]][@frame[2]], x, y)
+					love.graphics.draw @image, @quads[@frame[1]][@frame[2]], x, y
 				else
-					love.graphics.draw(@image, @quads[@frame[1]][@frame[2]], x, y, 0, -1, 1, @cellWidth, 0)
+					love.graphics.draw @image, @quads[@frame[1]][@frame[2]], x, y, 0, -1, 1, @cellWidth, 0
 		else
 			love.graphics.draw(@image, x, y)
 

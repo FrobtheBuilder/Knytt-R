@@ -39,7 +39,7 @@ do
       end
       if params.flags["strip"] then
         local cols = #self.quads
-        local start, finish = params.frames[1], params.frames[2]
+        local start, finish = unpack(params.frames)
         params.frames = { }
         for i = start, finish do
           table.insert(params.frames, {

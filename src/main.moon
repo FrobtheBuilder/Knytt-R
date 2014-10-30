@@ -8,10 +8,13 @@ import EventEmitter from require "event"
 export GAMESTATE = require "lib.hump.gamestate"
 export TIMER = require "lib.hump.timer"
 export Camera = require "lib.hump.camera"
+export serpent = require "lib.serpent"
 
-export DEBUG = false
+export DEBUG = true
+export BOXES = false
+
 love.load = ->
-	love.graphics.setBackgroundColor(0, 0, 255)
+	love.graphics.setBackgroundColor(60, 40, 120)
 	GAMESTATE.switch(worldState!)
 
 love.update = (dt) ->
@@ -19,8 +22,6 @@ love.update = (dt) ->
 	TIMER.update dt
 
 love.draw = ->
-	love.graphics.print(love.timer.getFPS!)
-	love.graphics.print love.timer.getAverageDelta!, 0, 30
 	GAMESTATE.draw!
 
 love.keypressed = (key, code) ->

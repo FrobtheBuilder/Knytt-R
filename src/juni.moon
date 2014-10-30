@@ -116,7 +116,7 @@ class Juni extends Entity
 
 	draw: =>
 		@sprite\draw!
-		if DEBUG
+		if BOXES
 			love.graphics.point(@x, @y) --show the origin
 			@box\outline!
 

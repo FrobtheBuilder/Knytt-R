@@ -1,6 +1,6 @@
 import Box from require "misc"
 
-class Tile
+class Tile --wow why is this class even
 	new: (@tileset, col, row) =>
 		@quad = @tileset\getTileQuad col, row
 
@@ -8,37 +8,62 @@ class Tile
 		love.graphics.draw @tileset.image, @quad, x, y
 
 class Tilemap
-	new: (@tilesets={}) => -- tilesets is an array of images.
+	new: (@tilesets={}, @x, @y, viewportFunc) =>
+		@viewport = {}
+		with @viewport
+			.x, .y = viewportFunc!
+			.width, .height = love.window.getDimensions!
+			.hWidth, .hHeight = .width/2, .height/2
+			.func = viewportFunc
+			.refresh = =>
+				@x, @y = @.func!
+
 		@tiles = {}
+		@bounds = Box 0, 0, 30, 30
 
-	load: (source) => -- source = {type: ("empty"/"array"/"file"), data: {:l, :c, :r, :set}/{array}/filepath}
-
+	load: (source) => 
+	-- source = {type: ("empty"/"array"/"file"), 
+	-- 				data: {:l, :c, :r, :set}/{array}/filepath}
 		if source.type == "empty"
 			if not @tiles[source.data.l] 
 				@tiles[source.data.l] = {}
 			for c=1,source.data.c
 				table.insert @tiles[source.data.l], {}
 				for r=1,source.data.r
-					table.insert @tiles[source.data.l][c], Tile @tilesets[source.data.set], 1, 3
+					table.insert @tiles[source.data.l][c], Tile @tilesets[source.data.set], 1, 2
 	draw: =>
-		if @tiles[1] and @tiles[1][1] and @tiles[1][1][1]
-			-- ok lets hardcode layer 1 for now.
-			for c=1, #@tiles[1]
-				for r=1, #@tiles[1][c]
-					@tiles[1][c][r]\draw c*24, r*24
+		@viewport\refresh!
+
+		for layer in *@tiles
+			if layer[1] and layer[1][1]
+				for c=1, #layer
+					for r=1, #layer[c]
+
+						realX, realY = @real c, r, layer[c][r]
+						if realX > (@viewport.x - (@viewport.hWidth + layer[c][r].tileset.cell.width))
+							if realX < (@viewport.x + @viewport.hWidth)
+								if realY > (@viewport.y - (@viewport.hHeight + layer[c][r].tileset.cell.width))
+									if realY < (@viewport.y + @viewport.hHeight)
+										layer[c][r]\draw @real c, r, layer[c][r]
+
+	real: (c, r, tile) =>
+		return (c-1)*tile.tileset.cell.width, (r-1)*tile.tileset.cell.height
 
 class Tileset
 	new: (path, @cols, @rows, cell) =>
 		@image = love.graphics.newImage path
-		@raw = {width: @image\getWidth!, height: @image\getHeight!}
-		if type(cell) == "table"
-			@cell = {width: cell[1], height: cell[2]}
+
+		@real = 
+			width: @image\getWidth! 
+			height: @image\getHeight!
+
+		@cell = if type(cell) == "table"
+			width: cell[1], height: cell[2]
 		else
-			@cell = {width: cell, height: cell}
-		print @cell.width, @cell.height
+			width: cell, height: cell
 
 	getTileQuad: (@col, @row) =>
-		love.graphics.newQuad @col*@cell.width, @row*@cell.height,
+		love.graphics.newQuad (@col-1)*@cell.width, (@row-1)*@cell.height,
 										@cell.width, @cell.height,
-										@raw.width, @raw.height
+										@real.width, @real.height
 {:Tilemap, :Tileset}

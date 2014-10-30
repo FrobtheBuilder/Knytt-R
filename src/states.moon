@@ -49,17 +49,23 @@ class worldState extends State
 		super!
 		@dt = 0
 		@juni = @addChild(Juni 10, 500)
-		@map = Tilemap {Tileset "assets/img/tilesets/Tileset1.png", 16, 8, 24}
+		@map = Tilemap {Tileset "assets/img/tilesets/Tileset1.png", 16, 8, 24},
+							@juni.x, @juni.y, @camera\pos
+
 		@map\load type: "empty", data: {c: 10, r: 10, l: 1, set: 1}
 		
 	sdraw: =>
-		love.graphics.print(1/@dt)
+		if DEBUG
+			stat = table.concat {
+				"fps: #{love.timer.getFPS!}"
+				"dt: #{love.timer.getAverageDelta!}"
+			}, "\n"
+			love.graphics.print(stat)
 
 	cdraw: =>
 		@map\draw!
 		
 	update: fixed_time_step 60, (dt) =>
-		@dt = dt
 		super dt
 		@camera\lookAt @juni.x, @juni.y-150
 

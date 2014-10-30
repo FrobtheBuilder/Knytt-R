@@ -82,13 +82,18 @@ do
   local _parent_0 = State
   local _base_0 = {
     sdraw = function(self)
-      return love.graphics.print(1 / self.dt)
+      if DEBUG then
+        local stat = table.concat({
+          "fps: " .. tostring(love.timer.getFPS()),
+          "dt: " .. tostring(love.timer.getAverageDelta())
+        }, "\n")
+        return love.graphics.print(stat)
+      end
     end,
     cdraw = function(self)
       return self.map:draw()
     end,
     update = fixed_time_step(60, function(self, dt)
-      self.dt = dt
       _parent_0.update(self, dt)
       return self.camera:lookAt(self.juni.x, self.juni.y - 150)
     end),
@@ -108,7 +113,13 @@ do
       self.juni = self:addChild(Juni(10, 500))
       self.map = Tilemap({
         Tileset("assets/img/tilesets/Tileset1.png", 16, 8, 24)
-      })
+      }, self.juni.x, self.juni.y, (function()
+        local _base_1 = self.camera
+        local _fn_0 = _base_1.pos
+        return function(...)
+          return _fn_0(_base_1, ...)
+        end
+      end)())
       return self.map:load({
         type = "empty",
         data = {

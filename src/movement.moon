@@ -13,7 +13,6 @@ class Movement extends Component
 		@accum.x += dx
 		@accum.y += dy
 
-
 		while @accum.x >= 1
 			@parent.x += 1
 			@accum.x -= 1
@@ -46,7 +45,6 @@ class Movement extends Component
 		if vy then @p.a.x += vy
 
 	update: (dt) =>
-
 		if @p.v.x < @p.v.max.x and @p.v.x > -@p.v.max.x
 			@p.v.x += @p.a.x*dt
 		elseif @p.v.x > @p.v.max.x

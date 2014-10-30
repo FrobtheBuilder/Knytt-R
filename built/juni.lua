@@ -152,7 +152,7 @@ do
     end,
     draw = function(self)
       self.sprite:draw()
-      if DEBUG then
+      if BOXES then
         love.graphics.point(self.x, self.y)
         return self.box:outline()
       end
