@@ -54,10 +54,10 @@ do
           for c = 1, #layer do
             for r = 1, #layer[c] do
               local realX, realY = self:real(c, r, layer[c][r])
-              if realX > (self.viewport.x - (self.viewport.hWidth + layer[c][r].tileset.cell.width)) then
-                if realX < (self.viewport.x + self.viewport.hWidth) then
-                  if realY > (self.viewport.y - (self.viewport.hHeight + layer[c][r].tileset.cell.width)) then
-                    if realY < (self.viewport.y + self.viewport.hHeight) then
+              if realX > (self.vp.x - (self.vp.hWidth + layer[c][r].tileset.cell.width)) then
+                if realX < (self.vp.x + self.vp.hWidth) then
+                  if realY > (self.vp.y - (self.vp.hHeight + layer[c][r].tileset.cell.width)) then
+                    if realY < (self.vp.y + self.vp.hHeight) then
                       layer[c][r]:draw(self:real(c, r, layer[c][r]))
                     end
                   end
@@ -90,6 +90,7 @@ do
           self.x, self.y = self.func()
         end
       end
+      self.vp = self.viewport
       self.tiles = { }
       self.bounds = Box(0, 0, 30, 30)
     end,

@@ -1,4 +1,4 @@
-.PHONY: assets src run lovekit
+.PHONY: assets src run
 
 default: run
 
@@ -8,10 +8,6 @@ src:
 
 run: src
 	love built
-
-lovekit:
-	cd src/lib/lovekit; \
-	moonc -t ../../../built lovekit
 
 clean:
 	bash -c "rm built/"*.lua"; rm -r built/lovekit; rm -r built/assets"

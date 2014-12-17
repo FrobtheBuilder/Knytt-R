@@ -1,6 +1,3 @@
---require "lovekit.all" 
--- something tells me that I won't 
--- be using this much due to UTTER LACK OF DOCUMENTATION FUCK
 
 import State, worldState from require "states"
 import EventEmitter from require "event"
@@ -11,7 +8,7 @@ export Camera = require "lib.hump.camera"
 export serpent = require "lib.serpent"
 
 export DEBUG = true
-export BOXES = false
+export BOXES = true
 
 love.load = ->
 	love.graphics.setBackgroundColor(60, 40, 120)

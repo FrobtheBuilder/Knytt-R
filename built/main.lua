@@ -13,7 +13,7 @@ TIMER = require("lib.hump.timer")
 Camera = require("lib.hump.camera")
 serpent = require("lib.serpent")
 DEBUG = true
-BOXES = false
+BOXES = true
 love.load = function()
   love.graphics.setBackgroundColor(60, 40, 120)
   return GAMESTATE.switch(worldState())

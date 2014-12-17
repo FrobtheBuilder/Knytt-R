@@ -11,7 +11,7 @@ To-do
 -----
 
 * Basic game stuff
-* ~~Steal~~ Liberate the KS art assets
+* ~~Steal~~ Liberate the KS art assets [DONE! Thanks to KSDS guys.]
 * Tilemap level format (.knr.bin) and editor
 * Maybe make compatible with existing .knytt.bin levels (gonna be hard)
 

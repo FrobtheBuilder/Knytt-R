@@ -18,6 +18,8 @@ class Tilemap
 			.refresh = =>
 				@x, @y = @.func!
 
+		@vp = @viewport -- it's shorter
+
 		@tiles = {}
 		@bounds = Box 0, 0, 30, 30
 
@@ -40,10 +42,10 @@ class Tilemap
 					for r=1, #layer[c]
 
 						realX, realY = @real c, r, layer[c][r]
-						if realX > (@viewport.x - (@viewport.hWidth + layer[c][r].tileset.cell.width))
-							if realX < (@viewport.x + @viewport.hWidth)
-								if realY > (@viewport.y - (@viewport.hHeight + layer[c][r].tileset.cell.width))
-									if realY < (@viewport.y + @viewport.hHeight)
+						if realX > (@vp.x - (@vp.hWidth + layer[c][r].tileset.cell.width))
+							if realX < (@vp.x + @vp.hWidth)
+								if realY > (@vp.y - (@vp.hHeight + layer[c][r].tileset.cell.width))
+									if realY < (@vp.y + @vp.hHeight)
 										layer[c][r]\draw @real c, r, layer[c][r]
 
 	real: (c, r, tile) =>
